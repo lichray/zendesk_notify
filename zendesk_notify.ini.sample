@@ -1,0 +1,4 @@
+[DEFAULT]
+host = rackspacecloud.zendesk.com
+api_key = EMAIL/token:TOKEN
+user_id = DIGITS
