@@ -55,9 +55,9 @@ def Notifier(cfg, db):
                previously_confirmed=True)
 
     def alert(title, link):
-        self.dialog = _new_notification(title, icon="dialog-information")
+        self.dialog = _new_notification(title, '', "dialog-information")
         self.dialog.set_timeout(0)
-        self.dialog.add_action(link, "Show", open_link)
+        self.dialog.add_action(link, "Show", open_link, None, None)
         self.dialog.connect("closed", closed)
         self.dialog.show()
 
@@ -69,7 +69,7 @@ def Notifier(cfg, db):
         uri = uri_template.format(**dic)
         return requests.get(uri, auth=tuple(dic['api_key'].split(':'))).json()
 
-    def open_link(w, link):
+    def open_link(w, link, data):
         webbrowser.open(link)
 
     def closed(w):
