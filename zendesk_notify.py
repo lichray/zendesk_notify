@@ -97,16 +97,13 @@ def Notifier(cfg, db):
                 raise Exception('User is not unique')
 
             cfg['user_id'] = str(users['users'][0]['id'])
-            groups = request_json(GROUPS_TMPL, cfg)
+            groups = request_json(GROUPS_TMPL, cfg)['group_memberships']
+            tickets = request_json(TICKETS_TMPL, cfg)['tickets']
 
-            for group in groups['group_memberships']:
-                tickets = request_json(TICKETS_TMPL, cfg)
-
-                for ticket in tickets['tickets']:
-                    ticket_id = str(ticket["id"])
-
-                    if ticket_id not in db:
-                        self.new_tickets.add(ticket_id)
+            group_ids = {g['group_id'] for g in groups}
+            tids = [str(t['id']) for t in tickets
+                    if t['group_id'] in group_ids]
+            self.new_tickets.update(filter(lambda id: id not in db, tids))
 
             if len(self.new_tickets) != 0 and self.previously_confirmed:
                 alert('Your group got %d new tickets' % len(self.new_tickets),
