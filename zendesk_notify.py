@@ -4,6 +4,7 @@ import base64
 
 # The endpoints must be Agent-oriented.
 
+USERS_TMPL = 'https://{host}/api/v2/users/search.json?query={user}'
 GROUPS_TMPL = 'https://{host}/api/v2/users/{user_id}/group_memberships.json'
 TICKETS_TMPL = 'https://{host}/api/v2/tickets/recent.json'
 VIEW_TICKETS_TMPL = base64.decodestring('''
@@ -88,6 +89,14 @@ def Notifier(cfg, db):
 
     def look_at_queue():
         try:
+            users = request_json(USERS_TMPL, cfg)
+
+            if users['count'] < 0:
+                raise Exception('User not found')
+            elif users['count'] > 1:
+                raise Exception('User is not unique')
+
+            cfg['user_id'] = str(users['users'][0]['id'])
             groups = request_json(GROUPS_TMPL, cfg)
 
             for group in groups['group_memberships']:
