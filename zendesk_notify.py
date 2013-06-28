@@ -37,11 +37,17 @@ try:
     Notify.init('zendesk-notify')
     _new_notification = Notify.Notification.new
 
+    def _add_action(w, action, text, f):
+        return w.add_action(action, text, f, None, None)
+
 except ImportError:
     import gobject
     import pynotify
     pynotify.init('zendesk-notify')
     _new_notification = pynotify.Notification
+
+    def _add_action(w, action, text, f):
+        return w.add_action(action, text, f)
 
 
 def Notifier(cfg, db):
@@ -57,7 +63,7 @@ def Notifier(cfg, db):
     def alert(title, link):
         self.dialog = _new_notification(title, '', "dialog-information")
         self.dialog.set_timeout(0)
-        self.dialog.add_action(link, "Show", open_link, None, None)
+        _add_action(self.dialog, link, "Show", open_link)
         self.dialog.connect("closed", closed)
         self.dialog.show()
 
