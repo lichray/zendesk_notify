@@ -76,7 +76,7 @@ def Notifier(cfg, db):
         uri = uri_template.format(**dic)
         return requests.get(uri, auth=tuple(dic['api_key'].split(':'))).json()
 
-    def open_link(w, link, data):
+    def open_link(w, link, **kwargs):
         webbrowser.open(link)
 
     def closed(w):
